@@ -41,9 +41,17 @@
   #textBox
   {
     height: 70vh;
+    word-wrap: break-word;
+    overflow: scroll;
   }
   
   #results{
     height: 87vh;
     
+  }
+
+  iframe{
+    border: 1px solid black;
+    height: 85vh;
+    width: 100%;
   }
