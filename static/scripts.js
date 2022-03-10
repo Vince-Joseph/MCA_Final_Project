@@ -69,32 +69,6 @@ function printDoc() {
   oPrintWin.document.close();
 }
 
-
-// function showBold()
-// {
-//   var oDoc = document.getElementById("textBox");
-//   var sDefTxt = oDoc.innerHTML;
-//   var arr = oDoc.getElementsByTagName('b');
-
-//   for(let i=0; i<arr.length; i++)
-//   {
-//     console.log((arr[i])['textContent']);
-//   }
-//   // console.log(());
-// }
-
-// function getContent()
-// {
-//   var textBox = document.getElementById("textBox");
-//   var result = document.getElementById("result");
-
-//   console.log(textBox.innerHTML);
-//   result.innerHTML = String(textBox.innerHTML);
-// }
-
-
-
-
 function getContent() {
   let content = document.getElementById("textBox");
   // alert(content.innerText);
@@ -110,60 +84,6 @@ function formattedContent() {
   return content;
 }
 
-// function exe()
-// {
-//       var formdata = [1, 2, 3 ,4 ];
-//       var xhttp = new XMLHttpRequest();
-//       xhttp.open("POST", "http://127.0.0.1:5000/", true); 
-//       xhttp.setRequestHeader("Content-Type", "application/json");
-//       xhttp.onreadystatechange = function() {
-//         if (this.readyState == 4 && this.status == 200) {
-//           // Response
-//           var response = this.responseText;
-//         }
-//       };
-//       var data = {name:'yogesh',salary: 35000,email: 'yogesh@makitweb.com'};
-//       xhttp.send(JSON.stringify(data));
-
-
-//   //     document.ajax({
-//   //       type: 'POST',
-//   //     contentType: 'application/json',
-//   //     data: JSON.stringify("values", formdata),
-//   //     dataType: 'json',
-//   //     url: 'http://127.0.0.1:5000/',
-//   //     success: function (e) {
-//   //         console.log(e);
-//   //         window.location = "http://127.0.0.1:5000/";
-//   //     },
-//   //     error: function(error) {
-//   //     console.log(error);
-//   // }
-//   // });
-// }
-//     $(document).ready( function() {
-//       $('#submit').click(function() {
-//          var formdata = serialize();
-//          $.ajax({
-//                type: 'POST',
-//               contentType: 'application/json',
-//               data: JSON.stringify(formdata),
-//               dataType: 'json',
-//               url: 'http://127.0.0.1:5000/',
-//               success: function (e) {
-//                   console.log(e);
-//                   window.location = "http://127.0.0.1:5000/";
-//               },
-//               error: function(error) {
-//               console.log(error);
-//           }
-//           });
-//       });
-// });
-
-
-
-
 // const data = document.getElementById("info")
 const button = document.getElementById("submit");
 // Create an array of cars to send to the server:
@@ -176,11 +96,90 @@ let cars = [
 cars = {'abc':1}
 
 
+
+// Font size: >= 14
+// Formatting: h1 to h5
+
+
 // Create an event listener on the button element:
 button.onclick = function () {
 
   var content = oDoc.innerHTML;
-  console.log(oDoc.getElementsByTagName('font'));
+  let fontElements = oDoc.getElementsByTagName('font');
+  let fontTitles = []; 
+
+  // selecting eligible elements from group of font elements
+  for (const element of fontElements) {
+    if(element.getAttribute('size')>=4)
+    {
+      fontTitles.push(element);
+    }
+  }
+
+
+
+  // console.log($("h2").next());
+
+  let headingArray = [
+    oDoc.getElementsByTagName('h1'),
+    oDoc.getElementsByTagName('h2'),
+    oDoc.getElementsByTagName('h3'),
+    oDoc.getElementsByTagName('h4'),
+    oDoc.getElementsByTagName('h5')
+  ];
+
+
+
+
+  // define the object structure
+// {
+  
+// }
+  // for each type of head elements
+  for (const headTag of headingArray) {
+
+    // for each head array element,
+    for (const ele of headTag) {
+  
+      // if current h1 element is immediately followed by a paragraph then
+      if($(ele).next().is($('p')))
+      {
+        // get the paragraph
+        let paragraphs = $(ele).next();
+  
+  
+        // look into the paragraph and extract important features from it
+        // like bold, italic, underline, hyperlink text
+        let boldArray = new Array();
+        let italicArray = new Array();
+        let underlineArray = new Array();
+        let hyperlinkArray = new Array();
+        
+        for (const para of paragraphs) {
+          boldArray.push(para.getElementsByTagName('b'));
+          italicArray.push(para.getElementsByTagName('i'));
+          underlineArray.push(para.getElementsByTagName('u'));
+          hyperlinkArray.push(para.getElementsByTagName('a'));
+        }
+        
+        console.log(ele);
+        console.log(boldArray);
+        console.log(italicArray);
+        console.log(underlineArray);
+        console.log(hyperlinkArray);
+      } 
+         
+    }    
+  }
+
+
+  // console.log(fontTitles);
+  // console.log(h1);
+  // console.log(h2);
+  // console.log(h3);
+  // console.log(h4);
+  // console.log(h5);
+
   $.ajax({
       url: 'http://127.0.0.1:5000/results',
       data: JSON.stringify({'content':content}),
@@ -191,7 +190,7 @@ button.onclick = function () {
           console.log(response);
       },
       error: function(error) {
-          console.log(error);
+          // console.log(error);
       }
 
   });
