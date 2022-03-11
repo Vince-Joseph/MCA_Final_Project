@@ -96,9 +96,8 @@ let cars = [
 cars = {'abc':1}
 
 
+let formattedInfo = new Array();
 
-// Font size: >= 14
-// Formatting: h1 to h5
 
 
 // Create an event listener on the button element:
@@ -132,43 +131,118 @@ button.onclick = function () {
 
 
   // define the object structure
-// {
-  
-// }
+
+
+
+  let boldArray = new Array();
+  let italicArray = new Array();
+  let underlineArray = new Array();
+  let hyperlinkArray = new Array();
+  let subtitle;
+
   // for each type of head elements
   for (const headTag of headingArray) {
 
     // for each head array element,
     for (const ele of headTag) {
-  
+      
+      let paraContent = "";
+      subtitle = "";
       // if current h1 element is immediately followed by a paragraph then
       if($(ele).next().is($('p')))
       {
         // get the paragraph
         let paragraphs = $(ele).next();
+        // log(ele);
   
-  
-        // look into the paragraph and extract important features from it
-        // like bold, italic, underline, hyperlink text
-        let boldArray = new Array();
-        let italicArray = new Array();
-        let underlineArray = new Array();
-        let hyperlinkArray = new Array();
         
+        // look into the paragraphs under current title and extract important features from it
+        // like bold, italic, underline, hyperlink text
         for (const para of paragraphs) {
           boldArray.push(para.getElementsByTagName('b'));
           italicArray.push(para.getElementsByTagName('i'));
           underlineArray.push(para.getElementsByTagName('u'));
           hyperlinkArray.push(para.getElementsByTagName('a'));
+
+          paraContent += para.textContent;
         }
         
-        console.log(ele);
-        console.log(boldArray);
-        console.log(italicArray);
-        console.log(underlineArray);
-        console.log(hyperlinkArray);
+        // console.log(ele);
+        // console.log(boldArray);
+        // console.log(italicArray);
+        // console.log(underlineArray);
+        // console.log(hyperlinkArray);
       } 
-         
+      // else if heading has a subtitle then
+      // the format is <div> <h2>...</h2> </div>
+      else if(
+          ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h2')))) ||
+          ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h3')))) ||
+          ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h4')))) ||
+          ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h5')))) ||
+          ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h6')))) 
+                                      )
+      {
+        // console.log(((($(ele).next()).children())));
+
+        // get the subtitle only if subtitle text is defiend by a tag lesser than then main title
+        if((ele.tagName < (($(ele).next()).children())))
+        {
+          subtitle = (($(ele).next()).children())[0].textContent;
+          // console.log(subtitle);
+        }
+      }
+      
+      /* 
+      {
+        [
+          {
+            heading: "first heading", 
+            subtitle: "subtitle", 
+            para: "following paragraph", 
+            bold:["bold1", "bold2", "bold3"]],
+            italic:["italic1", "italic2", "italic3"]],
+            underline:["underline1", "underline2", "underline3"]],
+            links:["link1", "link1", "link1", "link1"]
+          }
+        ]
+      }
+      */
+      // now join all the retireved info about current para and make an obj
+      let currentObj = {};
+      currentObj.heading = ele.textContent;
+      currentObj.subtitle = subtitle;
+      currentObj.para = paraContent;
+
+
+      // retrieve the text content from bold, italic, underline and link elements
+      let boldTextArray = new Array();
+      for (const boldElement of boldArray) {
+        boldTextArray.push(boldElement.textContent);
+      }
+      let italicTextArray = new Array();
+      for (const italicElement of italicArray) {
+        italicTextArray.push(italicElement.textContent);
+      }
+      let underlineTextArray = new Array();
+      for (const underlineElement of underlineArray) {
+        underlineTextArray.push(underlineElement.textContent);
+      }
+      let linkTextArray = new Array();
+      for (const linkElement of hyperlinkArray) {
+        linkTextArray.push(linkElement); // !!!!!!!!!!!!! we must retrieve text, change this !!!!!!!!!!!!!!!!!
+      }
+
+      currentObj.bold = boldTextArray;
+      currentObj.italic = italicTextArray;
+      currentObj.underline = underlineTextArray;
+      currentObj.links = linkTextArray;
+
+
+      // now push the current object to the array of objects
+      formattedInfo.push(currentObj);
+
+      console.log(currentObj);
     }    
   }
 
