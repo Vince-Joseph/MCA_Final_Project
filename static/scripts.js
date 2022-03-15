@@ -140,11 +140,11 @@ button.onclick = function () {
           {
             heading: "first heading", 
             subtitle: "subtitle", 
-            para: "following paragraph", 
+            paraContent: "following paragraph", 
             bold:[["bold1", "bold2", "bold3"], ["bold1", "bold2", "bold3"], ["bold1", "bold2", "bold3"]],
             italic:[["italic1", "italic2", "italic3"], ["italic1", "italic2", "italic3"]],
             underline:[["underline1", "underline2", "underline3"], ["underline1", "underline2", "underline3"], ["underline1", "underline2", "underline3"]],
-            links:[["link1", "link1", "link1", "link1"], ["link1", "link1", "link1", "link1"], ["link1", "link1", "link1", "link1"]]
+            hyperlink:[["link1", "link1", "link1", "link1"], ["link1", "link1", "link1", "link1"], ["link1", "link1", "link1", "link1"]]
           }
         ]
       }

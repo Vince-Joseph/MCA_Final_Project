@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, json, jsonify
+from process import processBlock
 
 app = Flask(__name__)
 
@@ -8,14 +9,7 @@ app = Flask(__name__)
 def index():
     
     data = request.get_json()
-    # data.get('data')
-    # print(request.get_data())
-    # print(request.get_json())
     content =  request.get_json()
-    print(content)
-    # resultsPage(content)
-    # results = {'processed': request.method}
-    # return jsonify(results)
     return render_template("index.html", content = content)
 
 
@@ -34,14 +28,16 @@ def index():
 
 @app.route('/results', methods=['GET', 'POST'])
 def resultsPage():
-    # print("from results page", content)
     content =  request.get_json()
-    # print(content)
     data = request.get_json()
-    print (request.is_json)
+
     if request.is_json:
-        print(data)
-        return render_template('results.html', data=data)
+        # process each block of text
+        for block in data['content']:
+            processBlock(block)
+            # print(block, "\n\n")
+
+        return render_template('results.html', data=data['content'][0])
     
     return render_template('results.html', data=[])
     
