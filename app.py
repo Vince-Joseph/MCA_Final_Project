@@ -33,8 +33,10 @@ def resultsPage():
 
     if request.is_json:
         # process each block of text
+        i=1
         for block in data['content']:
-            processBlock(block)
+            processBlock(block, i)
+            i += 1           
             # print(block, "\n\n")
 
         return render_template('results.html', data=data['content'][0])

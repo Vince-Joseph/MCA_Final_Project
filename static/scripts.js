@@ -114,9 +114,9 @@ button.onclick = function () {
 
   // selecting eligible elements from group of font elements
   for (const element of fontElements) {
-    if(element.getAttribute('size')>=4)
+    if(element.getAttribute('size')>=4) // only fonts with size>4 will be selected
     {
-      fontTitles.push(element);
+      fontTitles.push(element); 
     }
   }
 
@@ -242,11 +242,21 @@ button.onclick = function () {
     if(isAnchorElement)
     {
       for (let i = 0; i < collection.length; i++) {
-        let text = (collection[i].getAttribute('href')).trim();
+        let link = (collection[i].getAttribute('href')).trim();
+        // let anchor_text = collection[i].innerText;
+
         // console.log(collection[i]);
         // console.log(text);
-        if(text !== "" && text !== " ")
-          arr.push(text);
+        if(link !== "" && link !== " ")
+        {
+          arr.push(link);
+          
+          // // if hyperlink text is what the url is intended for then only use the hyperlink text
+          // if(link == anchor_text)
+          //   arr.push(anchor_text);
+          // else 
+          // arr.push(link);
+        }
       }    
     }
     else
