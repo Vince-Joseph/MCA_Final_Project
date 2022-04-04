@@ -20,24 +20,27 @@ from summary import summarize
 def download_images(keyword, i):
     start_time = time.time()
     arguments = {
-        "keywords": keyword, # the keyword to search
+        "keywords": '"'+keyword+'"', # the keyword to search
         "limit": 5,
         "print_urls": False,
-        "image_directory":str(i) # the directory to which images are downloaded under downloads/
+        "image_directory":str(i), # the directory to which images are downloaded under downloads/
+        'output_directory':'static\\downloads',
+        # 'image_directory':'downloads'+str(i)
         # "format":"jpgpng"
     }
-    try:
-        temp = arguments['output_folder']
-    except KeyError:
-        pass
-    else:
-        assert False, "This test checks download to default location yet an output folder was provided"
+    # try:
+    #     temp = arguments['output_folder']
+    # except KeyError:
+    #     pass
+    # else:
+    #     assert False, "This test checks download to default location yet an output folder was provided"
 
     output_folder_path = os.path.join(os.path.realpath('.'), 
-                'downloads', 
+                'static\\downloads\\', 
                 '{}'.format(i))
                 # '{}'.format(argumnets['keywords']))
                 # '{}'.format(argumnets['keywords']))
+    # print(output_folder_path)
                 
     # if os.path.exists(output_folder_path):
     #     start_amount_of_files_in_output_folder = len([name for name in os.listdir(output_folder_path) if os.path.isfile(os.path.join(output_folder_path, name)) and os.path.getctime(os.path.join(output_folder_path, name)) < start_time])
@@ -73,29 +76,30 @@ def download_images(keyword, i):
 def processBlock(block, i):
     # print(block)
     heading = block['heading']
-    bold = block['bold']
-    italic = block['italic']
-    underline = block['underline']
-    hyperlink = block['hyperlink']
-    paraContent = block['paraContent']
+    # bold = block['bold']
+    # italic = block['italic']
+    # underline = block['underline']
+    # hyperlink = block['hyperlink']
+    # paraContent = block['paraContent']
 
-    summarized_text = summarize(paraContent, 0.34)
+    # summarized_text = summarize(paraContent, 0.34)
 
     # print(heading)
     # print(paraContent)
     # print(summarized_text, "\n")
     download_images(heading, i)
+    # download_images(summarized_text, i)
 
-    print(italic, underline, hyperlink)
-    for x in bold:
-        for y in x:
-            download_images(y, i)
-    for x in italic:
-        for y in x:
-            download_images(y, i)
-    for x in underline:
-        for y in x:
-            download_images(y, i)
+    # print(italic, underline, hyperlink)
+    # for x in bold:
+    #     for y in x: 
+    #         download_images(y, i)
+    # for x in italic:
+    #     for y in x:
+    #         download_images(y, i)
+    # for x in underline:
+    #     for y in x:
+    #         download_images(y, i)
 
     # hyperlink is under maintanence
     # for x in hyperlink:

@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
 
+    <div class="px-2">
+        <h2 align="center">Results</h2>
+        <hr/>
+        <!-- {{data}} -->
+        {% for files in data %}
+            {% for file in files %}
+                <img src="{{file}}" alt="No image" style="width:120px; height:120px">            
+            {% endfor %}
+        {% endfor %}
+    </div>
 
-    <h1>Results</h1>
-    {% for each in data %}
-    {{ each }}
-    {% endfor %}
 {% endblock %}
