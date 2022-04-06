@@ -286,9 +286,34 @@ button.onclick = function () {
       type: 'POST',
       success: function(response) {
           console.log(response);
-      },
-      error: function(error) {
-          // console.log(error);
+          let iframe = document.getElementById('frame');
+          iframe.src = "results.html";
+        },
+        error: function(error) {
+        let iframe = document.getElementById('frame');
+        iframe.src = "results";
+        // document.getElementById('res').innerHTML = `<img src=${'../static/downloads/1/upstox.png'} alt="no imagae">`;
+        console.log(error);
+
+
+        /*
+          After downloading all the images at the server side, the server will return a response back.
+          WHen receiving this response, we will load the downloaded images from the folder to the resultant page.
+        */
+        var folder = "static/downlaods/";
+
+        $.ajax({
+            url : folder,
+            success: function (data) {
+                $(data).find("a").attr("href", function (i, val) {
+                    if( val.match(/\.(jpe?g|png|gif)$/) ) { 
+                        $("#res").append( "<img src='"+ folder + val +"'>" );
+                    } 
+                });
+            }
+        });
+
+
       }
 
   });

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body %}
+
+    <div class="px-2">
+    <center>
+        <img src="{{url_for('static', filename='loading.gif')}}" alt="No image available">
+        <hr/>
+        <h4 align="center">Searching for results...</h4>
+    </center>
+    </div>
+
+{% endblock %}

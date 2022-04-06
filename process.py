@@ -26,7 +26,7 @@ def download_images(keyword, i):
         "image_directory":str(i), # the directory to which images are downloaded under downloads/
         'output_directory':'static\\downloads',
         # 'image_directory':'downloads'+str(i)
-        # "format":"jpgpng"
+        "format":"jpg"
     }
     # try:
     #     temp = arguments['output_folder']
@@ -36,11 +36,10 @@ def download_images(keyword, i):
     #     assert False, "This test checks download to default location yet an output folder was provided"
 
     output_folder_path = os.path.join(os.path.realpath('.'), 
-                'static\\downloads\\', 
-                '{}'.format(i))
+                'static\\downloads\\') 
+                # '{}'.format(i))
                 # '{}'.format(argumnets['keywords']))
                 # '{}'.format(argumnets['keywords']))
-    # print(output_folder_path)
                 
     # if os.path.exists(output_folder_path):
     #     start_amount_of_files_in_output_folder = len([name for name in os.listdir(output_folder_path) if os.path.isfile(os.path.join(output_folder_path, name)) and os.path.getctime(os.path.join(output_folder_path, name)) < start_time])
@@ -55,7 +54,9 @@ def download_images(keyword, i):
     files_modified_after_test_started = [name for name in os.listdir(output_folder_path) if os.path.isfile(os.path.join(output_folder_path, name)) and os.path.getmtime(os.path.join(output_folder_path, name)) > start_time]
     end_amount_of_files_in_output_folder = len(files_modified_after_test_started)
     print(f"Files downloaded by test {__name__}:")
-    for file in files_modified_after_test_started:
+    i=1
+    for file in files_modified_after_test_started:        
+        i += 1
         print(os.path.join(output_folder_path, file))
 
 
