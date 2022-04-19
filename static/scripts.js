@@ -4,10 +4,6 @@ function initDoc() {
   oDoc = document.getElementById("textBox");
   hiddenField = document.getElementById("myDoc");
   sDefTxt = oDoc.innerHTML;
-  // if (document.compForm.switchMode.checked) 
-  // {
-  //   setDocMode(true);
-  // }
 }
 
 function formatDoc(sCmd, sValue) {
@@ -109,6 +105,7 @@ let formattedInfo = new Array();
 button.onclick = function () {
 
   var content = oDoc.innerHTML;
+  console.log(content);
   let fontElements = oDoc.getElementsByTagName('font');
   let fontTitles = []; 
 
@@ -150,88 +147,137 @@ button.onclick = function () {
       }
     */      
       
-      
+      console.log(headingArray);
       // for each type of head elements
       for (const headTag of headingArray) {
         
         // for each head array element,
         for (const ele of headTag) {
 
-            let currentObj = {};
-
-            // set the title of the current object 
-            currentObj.heading = ele.textContent;
-            let subtitle = "";
-            let paraContent = "";
-
-            // if current h1 element is immediately followed by a paragraph then
-            if($(ele).next().is($('p')))
+            if(ele.length != 0)
             {
-              // get the paragraphs
-              let p = $(ele).next();
-              let paragraphs = new Array();
-
-              // retrieving all the paragraph elements under current title
-              while($(p).is($('p')))
-              {
-                paragraphs.push(p);
-                p = $(p).next();
-              }              
+              // console.log("This is the element");
+              // console.log(($(ele).parent()).next());
+              let currentObj = {};
               
-              // look into the paragraphs under current title and extract important features from it
-              // like bold, italic, underline, hyperlink text
-              let boldTextArray = new Array();
-              let italicTextArray = new Array();
-              let underlineTextArray = new Array();
-              let hyperlinkTextArray = new Array();
-
-              for (const para of paragraphs) {
-                        
-                paraContent += para[0].textContent;
-
-                boldTextArray.push(returnArray(para[0].getElementsByTagName('b'), false));
-                italicTextArray.push(returnArray(para[0].getElementsByTagName('i'), false));
-                underlineTextArray.push(returnArray(para[0].getElementsByTagName('u'), false));
-                hyperlinkTextArray.push(returnArray(para[0].getElementsByTagName('a'), true));
+              // set the title of the current object 
+              currentObj.heading = ele.textContent;
+              let subtitle = "";
+              let paraContent = "";
+  
+              // if current h1 element is immediately followed by a paragraph then
+              // if(true)
+              if($(ele).next().is($('p')))
+              {
+                // get the paragraphs
+                let p = $(ele).next();
+                let paragraphs = new Array();
+  
+                // retrieving all the paragraph elements under current title
+                while($(p).is($('p')))
+                {
+                  paragraphs.push(p);
+                  p = $(p).next();
+                }              
+                
+                // look into the paragraphs under current title and extract important features from it
+                // like bold, italic, underline, hyperlink text
+                let boldTextArray = new Array();
+                let italicTextArray = new Array();
+                let underlineTextArray = new Array();
+                let hyperlinkTextArray = new Array();
+  
+                // console.log(paragraphs);
+                for (const para of paragraphs) {
+                  
+                  paraContent += para[0].textContent;
+  
+                  boldTextArray.push(returnArray(para[0].getElementsByTagName('b'), false));
+                  italicTextArray.push(returnArray(para[0].getElementsByTagName('i'), false));
+                  underlineTextArray.push(returnArray(para[0].getElementsByTagName('u'), false));
+                  hyperlinkTextArray.push(returnArray(para[0].getElementsByTagName('a'), true));
+                  
+                }
+                
+                // add other extracted elements into current object
+                currentObj.bold = boldTextArray;
+                currentObj.italic = italicTextArray;
+                currentObj.underline = underlineTextArray;
+                currentObj.hyperlink = hyperlinkTextArray;
+                currentObj.paraContent = paraContent; // the paragraph's content altogether              
+                
+                
+              } 
+              // else if heading has a subtitle then
+              // the format is <div> <h2>...</h2> </div>
+              else if(
+                  ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h2')))) ||
+                  ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h3')))) ||
+                  ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h4')))) ||
+                  ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h5')))) ||
+                  ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h6')))) 
+                                              )
+              {
+                // console.log(((($(ele).next()).children())));
+  
+                // get the subtitle only if subtitle text is defiend by a tag lesser than then main title
+                if((ele.tagName < (($(ele).next()).children())))
+                {
+                  subtitle = (($(ele).next()).children())[0].textContent;
+                  // console.log(subtitle);
+                }
+                currentObj.subtitle = subtitle;
                 
               }
-              
-              // add other extracted elements into current object
-              currentObj.bold = boldTextArray;
-              currentObj.italic = italicTextArray;
-              currentObj.underline = underlineTextArray;
-              currentObj.hyperlink = hyperlinkTextArray;
-              currentObj.paraContent = paraContent; // the paragraph's content altogether              
-             
-            
-            } 
-            // else if heading has a subtitle then
-            // the format is <div> <h2>...</h2> </div>
-            else if(
-                ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h2')))) ||
-                ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h3')))) ||
-                ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h4')))) ||
-                ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h5')))) ||
-                ($(ele).next().is($('div')) && (($(ele).next()).children().is($('h6')))) 
-                                            )
-            {
-              // console.log(((($(ele).next()).children())));
-
-              // get the subtitle only if subtitle text is defiend by a tag lesser than then main title
-              if((ele.tagName < (($(ele).next()).children())))
-              {
-                subtitle = (($(ele).next()).children())[0].textContent;
-                // console.log(subtitle);
+              else if((($(ele).parent()).next()).is('div')){ // this else is untested
+  
+                console.log("here");
+                  // get the paragraphs
+                  let p = ((($(ele).parent()).next())).text();
+                  console.log(p);
+                  // let paragraphs = new Array();
+      
+                  // // retrieving all the paragraph elements under current title
+                  // while($(p).is($('p')))
+                  // {
+                  //   paragraphs.push(p);
+                  //   p = $(p).next();
+                  // }              
+                  
+                  // // look into the paragraphs under current title and extract important features from it
+                  // // like bold, italic, underline, hyperlink text
+                  // let boldTextArray = new Array();
+                  // let italicTextArray = new Array();
+                  // let underlineTextArray = new Array();
+                  // let hyperlinkTextArray = new Array();
+      
+                  // // console.log(paragraphs);
+                  // for (const para of paragraphs) {
+                    
+                  //   paraContent += para[0].textContent;
+      
+                  //   boldTextArray.push(returnArray(para[0].getElementsByTagName('b'), false));
+                  //   italicTextArray.push(returnArray(para[0].getElementsByTagName('i'), false));
+                  //   underlineTextArray.push(returnArray(para[0].getElementsByTagName('u'), false));
+                  //   hyperlinkTextArray.push(returnArray(para[0].getElementsByTagName('a'), true));
+                    
+                  // }
+                  
+                  // // add other extracted elements into current object
+                  currentObj.bold = [];
+                  currentObj.italic = [];
+                  currentObj.underline = [];
+                  currentObj.hyperlink = [];
+                  currentObj.paraContent = ((($(ele).parent()).next())).text(); // the paragraph's content altogether              
+  
               }
-              currentObj.subtitle = subtitle;
-
+  
+              // now push the current object to the array of objects
+              formattedInfo.push(currentObj);              
             }
-
-            // now push the current object to the array of objects
-            formattedInfo.push(currentObj);
     }    
 
-    console.log(formattedInfo);
+    // console.log(formattedInfo);
   }
 
   // this method accepts a collection of html elements and returns the text content inside them as an array
@@ -271,6 +317,7 @@ button.onclick = function () {
     return arr;
   }
 
+  
   // console.log(fontTitles);
   // console.log(h1);
   // console.log(h2);
@@ -286,8 +333,21 @@ button.onclick = function () {
       type: 'POST',
       success: function(response) {
           console.log(response);
-          let iframe = document.getElementById('frame');
-          iframe.src = "results.html";
+
+          // var folder = "static/downloads/";
+
+          // $.ajax({
+          //     url : folder,
+          //     success: function (data) {
+          //         $(data).find("a").attr("href", function (i, val) {
+          //             if( val.match(/\.(jpe?g|png|gif)$/) ) { 
+          //                 $("#res").append( "<img src='" + folder + val +"' alt='"+folder + val+"' >" );
+          //             } 
+          //         });
+          //     }
+          // });
+
+
         },
         error: function(error) {
         let iframe = document.getElementById('frame');
@@ -300,18 +360,17 @@ button.onclick = function () {
           After downloading all the images at the server side, the server will return a response back.
           WHen receiving this response, we will load the downloaded images from the folder to the resultant page.
         */
-        var folder = "static/downlaods/";
-
-        $.ajax({
-            url : folder,
-            success: function (data) {
-                $(data).find("a").attr("href", function (i, val) {
-                    if( val.match(/\.(jpe?g|png|gif)$/) ) { 
-                        $("#res").append( "<img src='"+ folder + val +"'>" );
-                    } 
-                });
-            }
-        });
+        // var folder = "static/downloads/";
+        // $.ajax({
+        //     url : folder,
+        //     success: function (data) {
+        //         $(data).find("a").attr("href", function (i, val) {
+        //             if( val.match(/\.(jpe?g|png|gif)$/) ) { 
+        //                 $("#res").append( "<img src='"+ folder + val +"'>" );
+        //             } 
+        //         });
+        //     }
+        // });
 
 
       }

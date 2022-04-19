@@ -27,14 +27,39 @@ files = []
     The function resultsPage() will return the results.html file when one try to access
     /results url
 '''
+uu = 1
+page_set = False
+
 @app.route('/results', methods=['GET', 'POST'])
 def resultsPage():
-
-    # remove all existing sub directories from downloads folder
-    # shutil.rmtree('static/downloads/')
-    # os.mkdir('static/downloads')
-
+    global uu
     global files
+    global page_set
+
+    # print(uu)
+
+    if page_set:
+        if(uu<3):
+            # remove all existing sub directories from downloads folder
+            shutil.rmtree('static/downloads/')
+            os.mkdir('static/downloads')
+            # print("helo ------------------------------------")
+        else:
+            uu = 4
+            page_set = True
+    else:
+        # uu = 2
+        # print("uiuiiu ", uu)
+        if(uu<3):
+            # remove all existing sub directories from downloads folder
+            shutil.rmtree('static/downloads/')
+            os.mkdir('static/downloads')
+        else:
+            uu = 2
+
+    uu += 1
+
+
     files = []
 
     # accept the json request from client
@@ -45,16 +70,11 @@ def resultsPage():
         # process each block of text
         i=1
         for block in data['content']:
-            processBlock(block, i)
-            i += 1           
             print(block, "\n\n")
+            processBlock(block)
+            i += 1           
         
     files = getDirectoryDetails()
-    print(files)
-    # lenFiles = len(files)
-    # print("valueo f i", lenFiles)
-    # print("\n--------------", len(files))
-    # print(filesLength(files))
     return render_template('results.html', data=files)
 
 def filesLength(files):
@@ -64,22 +84,31 @@ def filesLength(files):
     return l
 
 def getDirectoryDetails():
-    entries = os.listdir('static/downloads/') # get details of all folder names under static/downloads
+    # entries = os.listdir('static/downloads/') # get details of all folder names under static/downloads
     files = [] # initialize the list of files to empty
+    folder_files = os.listdir('static/downloads/')
 
-    i=1
-    # loop via the list of folders
-    for folder in entries:
-        # get the names of inidividual files from each folder
-        folder_files = os.listdir('static/downloads/'+folder+'/')
-        for singleFile in folder_files:
-            # extension has not been added, but it's still working!!
-            os.rename('static/downloads/'+folder+'/'+singleFile, 'static/downloads/'+folder+'/'+str(i))
-            i += 1
+    i = 1
+    # for singleFile in files:
+    #     # extension has not been added, but it's still working!!
+    #     os.rename('static/downloads/'+singleFile, 'static/downloads/'+str(i))
+    #     i += 1
 
-        folder_files = os.listdir('static/downloads/'+folder+'/')
-        # format it and append to the files list
-        files.append(['static/downloads/'+folder+'/'+x for x in folder_files])
+    files = ['static/downloads/'+x for x in folder_files]
+    print(files)
+    # i=1
+    # # loop via the list of folders
+    # for folder in entries:
+    #     # get the names of inidividual files from each folder
+    #     folder_files = os.listdir('static/downloads/'+folder+'/')
+    #     for singleFile in folder_files:
+    #         # extension has not been added, but it's still working!!
+    #         os.rename('static/downloads/'+folder+'/'+singleFile, 'static/downloads/'+folder+'/'+str(i))
+    #         i += 1
+
+    #     folder_files = os.listdir('static/downloads/'+folder+'/')
+    #     # format it and append to the files list
+    #     files.append(['static/downloads/'+folder+'/'+x for x in folder_files])
 
     return files
 

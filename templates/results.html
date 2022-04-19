@@ -4,13 +4,12 @@
     <div class="px-2">
         <h2 align="center">Results</h2>
         <hr/>
-        <!-- {{data}} -->
         {% for files in data %}
-            {% for file in files %}
-                <img src="{{file}}" alt="No image" style="width:120px; height:120px">            
-            {% endfor %}
+            <img src="{{files}}" 
+            alt="No image" 
+            style="width:120px; height:120px">
         {% endfor %}
-        <!-- {{value}} -->
+        <div id="res"></div>
     </div>
 
 {% endblock %}
