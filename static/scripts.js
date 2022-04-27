@@ -7,20 +7,20 @@ function initDoc() {
 }
 
 function formatDoc(sCmd, sValue) {
-  if (validateMode()) {
+  // if (validateMode()) {
     document.execCommand(sCmd, false, sValue);
     oDoc.focus();
-  }
+  // }
 }
 
-function validateMode() {
-  // if (!document.compForm.switchMode.checked) {
-  //   return true;
-  // }
-  // alert('Uncheck "Show HTML".');
-  // oDoc.focus();
-  return true;
-}
+// function validateMode() {
+//   // if (!document.compForm.switchMode.checked) {
+//   //   return true;
+//   // }
+//   // alert('Uncheck "Show HTML".');
+//   // oDoc.focus();
+//   return true;
+// }
 
 function setDocMode(bToSource) {
   var oContent;
@@ -82,15 +82,6 @@ function printDoc() {
 
 // const data = document.getElementById("info")
 const button = document.getElementById("submit");
-// Create an array of cars to send to the server:
-// let cars = [
-//   { "make": "Porsche", "model": "911S" },
-//   { "make": "Mercedes-Benz", "model": "220SE" },
-//   { "make": "Jaguar", "model": "Mark VII" }
-// ];
-
-// cars = {'abc':1}
-
 
 
 /*  *************************************** Creation of JSON format starts here  ****************************************  */
@@ -104,8 +95,15 @@ let formattedInfo = new Array();
 // Create an event listener on the button element:
 button.onclick = function () {
 
+  // removing all the div elements in from the test editor content
+  var cnt = $("#textBox>div").contents();
+  $("#textBox div").replaceWith(cnt);
+
+  // console.log(cnt);
+
   var content = oDoc.innerHTML;
-  console.log(content);
+  // console.log(content);
+
   let fontElements = oDoc.getElementsByTagName('font');
   let fontTitles = []; 
 
@@ -117,7 +115,10 @@ button.onclick = function () {
     }
   }
 
+  let h1 = document.createElement('h1');
+  $("#textBox").prepend("<h1></h1>");
 
+  console.log(oDoc.innerHTML);
   // get all heading elements from the document
   let headingArray = [
     oDoc.getElementsByTagName('h1'),
@@ -127,7 +128,9 @@ button.onclick = function () {
     oDoc.getElementsByTagName('h5')
   ];
 
-
+  // console.log(oDoc);
+  // (oDoc).prepend(h1);
+  // app.prepend
 
 
   // define the object structure
@@ -147,7 +150,7 @@ button.onclick = function () {
       }
     */      
       
-      console.log(headingArray);
+      // console.log(headingArray);
       // for each type of head elements
       for (const headTag of headingArray) {
         
@@ -271,7 +274,18 @@ button.onclick = function () {
                   currentObj.paraContent = ((($(ele).parent()).next())).text(); // the paragraph's content altogether              
   
               }
-  
+              
+              // if paraContent is not in the current obj then
+              if(!('paraContent' in currentObj))
+              {
+                currentObj.bold = [];
+                currentObj.italic = [];
+                currentObj.underline = [];
+                currentObj.hyperlink = [];
+                currentObj.paraContent = "";
+
+              }
+              
               // now push the current object to the array of objects
               formattedInfo.push(currentObj);              
             }

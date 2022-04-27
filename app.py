@@ -38,24 +38,22 @@ def resultsPage():
 
     # print(uu)
 
-    if page_set:
-        if(uu<3):
-            # remove all existing sub directories from downloads folder
-            shutil.rmtree('static/downloads/')
-            os.mkdir('static/downloads')
-            # print("helo ------------------------------------")
-        else:
-            uu = 4
-            page_set = True
+    # if page_set:
+    if(uu<3):
+        # remove all existing sub directories from downloads folder
+        shutil.rmtree('static/downloads/')
+        os.mkdir('static/downloads')
+        # print("helo ------------------------------------")
     else:
-        # uu = 2
-        # print("uiuiiu ", uu)
-        if(uu<3):
-            # remove all existing sub directories from downloads folder
-            shutil.rmtree('static/downloads/')
-            os.mkdir('static/downloads')
-        else:
-            uu = 2
+        uu = 1
+        page_set = True
+    # else:
+    #     if(uu<3):
+    #         # remove all existing sub directories from downloads folder
+    #         shutil.rmtree('static/downloads/')
+    #         os.mkdir('static/downloads')
+    #     else:
+    #         uu = 2
 
     uu += 1
 
@@ -75,7 +73,7 @@ def resultsPage():
             i += 1           
         
     files = getDirectoryDetails()
-    return render_template('results.html', data=files)
+    return render_template('results.html', data=files, num=3)
 
 def filesLength(files):
     l = 0

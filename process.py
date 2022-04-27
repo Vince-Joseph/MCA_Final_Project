@@ -2,9 +2,11 @@ from google_images_download import google_images_download
 import os, errno
 import time
 from summary import summarize
-from transformers import PegasusForConditionalGeneration, PegasusTokenizer
-import torch
+from transformers import pipeline
+# from transformers import PegasusForConditionalGeneration, PegasusTokenizer
+# import torch
 import spacy
+import re
 
 # def silent_remove_of_file(file):
 #     try:
@@ -23,12 +25,12 @@ def download_images(keyword):
     start_time = time.time()
     arguments = {
         "keywords": '"'+keyword+'"', # the keyword to search
-        "limit": 5,
+        "limit": 3,
         "print_urls": False,
         'output_directory':'static',
         # "image_directory":str(i), # the directory to which images are downloaded under downloads/
         "image_directory":"downloads", # the directory to which images are downloaded under downloads/
-        "format":"jpg"
+        # "format":".jpg.png"
     }
     # try:
     #     temp = arguments['output_folder']
@@ -74,19 +76,33 @@ def download_images(keyword):
 
 # test_download_images_to_default_location("github")
 
+global nlp
 j = 0
 # accepts each block and its number, the number helps to identify the block number
 def processBlock(block):
-    # print(block)
+    global nlp
+    nlp = spacy.load('en_core_web_md')   
+
+    regExpression = '^([a-zA-Z\s\.\,\!\@])+'
+    print(block)
+
     heading = block['heading']
+    if(not(re.search(regExpression, heading))):
+        heading = "" 
+
     # bold = block['bold']
     # italic = block['italic']
-    # underline = block['underline']
+    underline = block['underline']
+        
     # hyperlink = block['hyperlink']
     paraContent = block['paraContent']
+    if(not(re.search(regExpression, paraContent))):
+        paraContent = "" 
 
-    download_images(heading)
+    if heading.strip() != "":
+        download_images(heading)
 
+    
     nouns_found_are = findNouns(paraContent)
 
     # remove the duplicates from nouns_found_are
@@ -96,7 +112,7 @@ def processBlock(block):
         if a[0] not in temp:
             temp.append(a[0])
     
-    print(temp)
+    # print(temp)
     nouns_found = []
     for a in temp:
         for b in nouns_found_are:
@@ -110,30 +126,67 @@ def processBlock(block):
 
     # below code will combine adjacent nouns and will use it to download images
     x = 0
-    while x < len(nouns_found)-1:
-        if ((nouns_found[x])[1])+1 == ((nouns_found[x+1])[1]):
-            nouns_str = (nouns_found[x])[0] + " "+ (nouns_found[x+1])[0]
-            download_images(nouns_str)
-            # print("something ******************************")
-            x += 2
-        else:
-            download_images((nouns_found[x])[0]) 
-            x += 1
+    if len(nouns_found)>1:
+        while x < len(nouns_found)-1:
 
+            if heading != "":
+                # download image only if there is a significant similarity between heading and the current word
+                if measureSimilarity(heading, (nouns_found[x])[0])>0.7:
+                    if ((nouns_found[x])[1])+1 == ((nouns_found[x+1])[1]):
+                        nouns_str = (nouns_found[x])[0] + " "+ (nouns_found[x+1])[0]
+                        print(nouns_str)
+                        download_images(nouns_str)
+                        # print("something ******************************")
+                        x += 2
+                    else:
+                        download_images((nouns_found[x])[0]) 
+                        print((nouns_found[x])[0])
+                        x += 1
+                else:
+                    x += 1
+            else: # if there is no heading, just download the nouns
+                if ((nouns_found[x])[1])+1 == ((nouns_found[x+1])[1]):
+                    nouns_str = (nouns_found[x])[0] + " "+ (nouns_found[x+1])[0]
+                    print(nouns_str)
+                    download_images(nouns_str)
+                    # print("something ******************************")
+                    x += 2
+                else:
+                    download_images((nouns_found[x])[0]) 
+                    print((nouns_found[x])[0])
+                    x += 1
 
+    elif len(nouns_found) == 1:
+        download_images((nouns_found[0])[0]) 
+
+    
     # print(nouns_str)
-    # summarized_text = summarize(paraContent, 0.34)
+    # summarized_text = summarize_content(paraContent)
+    # download_images(summarized_text)
 
     # print(heading)
     # print(paraContent)
-    # print(summarized_text, "\n")
+
+    for x in underline:
+        for y in x:
+            if(not(re.search(regExpression, y))):
+                download_images(y)
+                
+
+    # hyperlink is under maintanence
+    # for x in hyperlink:
+    #     for y in x:
+    #         download_images(y)
+
+    # print("Summarized test is\n", summarized_text, "\n")
     # summarize_content(paraContent)
 
     global j
     files = os.listdir('static/downloads/')
     for singleFile in files:
         # extension has not been added, but it's still working!!
-        os.rename('static/downloads/'+ singleFile, 'static/downloads/'+str(j)+'.jpg')
+        os.rename('static/downloads/'+ singleFile, 'static/downloads/'+str(j))
+        # os.rename('static/downloads/'+ singleFile, 'static/downloads/'+str(j)+'.jpg')
         j += 1
 
     # download_images(summarized_text, i)
@@ -145,14 +198,6 @@ def processBlock(block):
     # for x in italic:
     #     for y in x:
     #         download_images(y, i)
-    # for x in underline:
-    #     for y in x:
-    #         download_images(y, i)
-
-    # hyperlink is under maintanence
-    # for x in hyperlink:
-    #     for y in x:
-    #         download_images(y, i)
 
     # download_images(paraContent, i)
 
@@ -161,24 +206,48 @@ def findNouns(para):
     nlp = spacy.load("en_core_web_sm")
     # returns a document of object
     doc = nlp(para)
-
+    regExpression = '^([a-zA-Z\s\.\,\!\@])+'
     nouns = []
     # checking if it is a noun or not
     m = 1
     for x in doc:
-        if(x.tag_ == 'NNP'):
+        if(x.tag_ == 'NNP' and re.search(regExpression, x.text)): # append only if word is not entirely a numeric value
             nouns.append([x.text, m])
         m += 1
     return nouns
 
 def summarize_content(para):
+    # nlp = spacy.load('en_core_web_md')   
+
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     summarizer = pipeline("summarization")
     summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
 
     summary = summarizer(para, max_length=50, min_length=5, do_sample=False)[0]['summary_text']
     return summary
+
+
+
+# method to find the similariy between two given words in between [0, 1]
+def measureSimilarity(word1, word2):
+    # print(type(word1))
+    # print(type(word2))
+    print(word1, ' ', word2)
+    tokens = nlp(word1+" "+word2)
+  
+    for token in tokens:
+        # Printing the following attributes of each token.
+        # text: the word string, has_vector: if it contains
+        # a vector representation in the model, 
+        # vector_norm: the algebraic norm of the vector,
+        # is_oov: if the word is out of vocabulary.
+        print(token.text, token.has_vector, token.vector_norm, token.is_oov)
     
+    token1, token2 = tokens[0], tokens[1]
+    print(token1.similarity(token2))
+    return token1.similarity(token2)
+
+
 
 
 '''     
