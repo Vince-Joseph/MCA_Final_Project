@@ -7,6 +7,14 @@ from transformers import pipeline
 # import torch
 import spacy
 import re
+import nltk
+
+from nltk.corpus import stopwords
+# nltk.download('stopwords')
+
+from nltk.tokenize import word_tokenize
+
+
 
 # def silent_remove_of_file(file):
 #     try:
@@ -90,7 +98,7 @@ def processBlock(block):
     if(not(re.search(regExpression, heading))):
         heading = "" 
 
-    # bold = block['bold']
+    bold = block['bold']
     # italic = block['italic']
     underline = block['underline']
         
@@ -157,12 +165,16 @@ def processBlock(block):
                     x += 1
 
     elif len(nouns_found) == 1:
-        download_images((nouns_found[0])[0]) 
+        if measureSimilarity(heading, (nouns_found[0])[0])>0.7:
+            download_images((nouns_found[0])[0]) 
 
     
     # print(nouns_str)
-    # summarized_text = summarize_content(paraContent)
-    # download_images(summarized_text)
+    if(paraContent.strip() != ""):
+        summarized_text = summarize_content(paraContent)
+        summarized_text = summarized_text.replace(",", " ")
+        print("\n\n", summarized_text, "\n")
+        download_images(summarized_text)
 
     # print(heading)
     # print(paraContent)
@@ -170,6 +182,18 @@ def processBlock(block):
     for x in underline:
         for y in x:
             if(not(re.search(regExpression, y))):
+                download_images(y)
+
+    temp_heading = heading
+    text_tokens = word_tokenize(temp_heading)
+
+    tokens_without_sw = [word for word in text_tokens if not word in stopwords.words()]   
+
+    for x in tokens_without_sw:
+        print("From bold")
+        for y in x:
+            print(measureSimilarity(temp_heading, y))
+            if(not(re.search(regExpression, y)) and measureSimilarity(heading, y)>.7):
                 download_images(y)
                 
 
@@ -224,6 +248,7 @@ def summarize_content(para):
     summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
 
     summary = summarizer(para, max_length=50, min_length=5, do_sample=False)[0]['summary_text']
+    
     return summary
 
 
@@ -232,18 +257,18 @@ def summarize_content(para):
 def measureSimilarity(word1, word2):
     # print(type(word1))
     # print(type(word2))
-    print(word1, ' ', word2)
     tokens = nlp(word1+" "+word2)
   
-    for token in tokens:
-        # Printing the following attributes of each token.
-        # text: the word string, has_vector: if it contains
-        # a vector representation in the model, 
-        # vector_norm: the algebraic norm of the vector,
-        # is_oov: if the word is out of vocabulary.
-        print(token.text, token.has_vector, token.vector_norm, token.is_oov)
+    # for token in tokens:
+    #     # Printing the following attributes of each token.
+    #     # text: the word string, has_vector: if it contains
+    #     # a vector representation in the model, 
+    #     # vector_norm: the algebraic norm of the vector,
+    #     # is_oov: if the word is out of vocabulary.
+    #     print(token.text, token.has_vector, token.vector_norm, token.is_oov)
     
     token1, token2 = tokens[0], tokens[1]
+    print(word1, ' ', word2)
     print(token1.similarity(token2))
     return token1.similarity(token2)
 

@@ -60,11 +60,12 @@ def resultsPage():
 
     files = []
 
-    # accept the json request from client
-    data = request.get_json()
-
+ 
     i = 1
     if request.is_json:
+
+        # accept the json request from client - this line has been moved down from outside the if to here
+        data = request.get_json()
         # process each block of text
         i=1
         for block in data['content']:
